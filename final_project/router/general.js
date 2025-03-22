@@ -13,19 +13,51 @@ public_users.post("/register", (req,res) => {
 // Get the book list available in the shop
 public_users.get('/',function (req, res) {
   //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+   // Use JSON.stringify to send the list of books in a pretty format
+   return res.status(200).json(JSON.parse(JSON.stringify(books)));
 });
 
 // Get book details based on ISBN
 public_users.get('/isbn/:isbn',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
- });
+     // Retrieve the ISBN from the request parameters
+  const isbn = req.params.isbn;
+
+  // Check if the book exists by ISBN
+  const book = books[isbn]; // Assuming `books` is an object where ISBN is the key
+
+  if (book) {
+    // If the book is found, return the book details
+    return res.status(200).json(book);
+  } else {
+    // If the book is not found, return an error message
+    return res.status(404).json({ message: "Book not found" });
+  }
+});
   
 // Get book details based on author
 public_users.get('/author/:author',function (req, res) {
-  //Write your code here
-  return res.status(300).json({message: "Yet to be implemented"});
+   // Retrieve the author's name from the request parameters
+  const author = req.params.author.toLowerCase();
+
+  // Create an array to hold the books by the requested author
+  const booksByAuthor = [];
+
+  // Iterate over the books to find matching authors
+  for (let isbn in books) {
+    if (books[isbn].author.toLowerCase() === author) {
+      // If the author matches, add the book to the array
+      booksByAuthor.push(books[isbn]);
+    }
+  }
+
+  // If books by the author are found, return them
+  if (booksByAuthor.length > 0) {
+    return res.status(200).json(booksByAuthor);
+  } else {
+    // If no books are found by the author, return an error message
+    return res.status(404).json({ message: "No books found by this author" });
+  }
+
 });
 
 // Get all books based on title
